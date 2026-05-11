@@ -1,0 +1,1837 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#1B4D3E" id="theme-color-meta">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="FacturePro">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<title>FacturePro &mdash; Devis &amp; Factures</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--green:#1B4D3E;--green-light:#2D6A55;--green-pale:#EBF2EF;--gold:#C9A84C;--dark:#1A1A1A;--gray:#6B7280;--light:#F8F9F8;--border:#D1D9D6;--red:#E53E3E;}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html{-webkit-text-size-adjust:100%;}
+body{font-family:"DM Sans",sans-serif;background:var(--light);color:var(--dark);min-height:100vh;min-height:100dvh;-webkit-font-smoothing:antialiased;}
+
+.app-header{background:var(--green);padding:14px 24px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:100;box-shadow:0 2px 20px rgba(0,0,0,.15);}
+.app-header .logo-zone{display:flex;align-items:center;gap:12px;flex:1;}
+.app-header img.logo{height:32px;max-width:60px;object-fit:contain;}
+.app-header .logo-fallback{width:36px;height:36px;background:rgba(255,255,255,.15);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-family:"Cormorant Garamond",serif;font-weight:700;font-size:18px;}
+.app-header h1{font-family:"Cormorant Garamond",serif;color:#fff;font-size:20px;font-weight:600;flex:1;}
+.app-header .icon-btn{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:#fff;width:38px;height:38px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.app-header .icon-btn:hover{background:rgba(255,255,255,.2);}
+.app-header .icon-btn svg{width:18px;height:18px;}
+
+.mode-toggle{padding:20px 24px 0;background:#fff;border-bottom:1px solid var(--border);}
+.toggle-wrap{display:flex;background:var(--green-pale);border-radius:12px;padding:4px;gap:4px;max-width:400px;margin:0 auto;}
+.toggle-btn{flex:1;padding:12px 16px;border:none;background:transparent;border-radius:8px;font-family:"Cormorant Garamond",serif;font-size:16px;font-weight:600;color:var(--gray);cursor:pointer;transition:all .25s;letter-spacing:.5px;}
+.toggle-btn.active{background:var(--green);color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.15);}
+
+.workspace{display:grid;grid-template-columns:1fr 1fr;}
+.form-panel{padding:28px 32px;overflow-y:auto;border-right:1px solid var(--border);background:#fff;}
+.section-title{font-family:"Cormorant Garamond",serif;font-size:18px;font-weight:700;color:var(--green);margin-bottom:14px;padding-bottom:8px;border-bottom:2px solid var(--green-pale);display:flex;align-items:center;gap:8px;}
+.dot{width:8px;height:8px;background:var(--gold);border-radius:50%;display:inline-block;}
+.form-section{margin-bottom:28px;}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.form-grid.full{grid-template-columns:1fr;}
+.field{display:flex;flex-direction:column;gap:5px;}
+label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--gray);}
+input,textarea,select{border:1.5px solid var(--border);border-radius:8px;padding:11px 14px;font-family:"DM Sans",sans-serif;font-size:14px;color:var(--dark);background:var(--light);outline:none;width:100%;transition:all .2s;}
+input:focus,textarea:focus,select:focus{border-color:var(--green);background:#fff;box-shadow:0 0 0 3px rgba(0,0,0,.05);}
+textarea{resize:vertical;min-height:60px;font-family:"DM Sans",sans-serif;}
+
+.ac-wrap{position:relative;}
+.ac-list{position:absolute;top:100%;left:0;right:0;background:#fff;border:1.5px solid var(--green);border-top:none;border-radius:0 0 8px 8px;z-index:9999;max-height:180px;overflow-y:auto;box-shadow:0 8px 20px rgba(0,0,0,.12);display:none;}
+.ac-item{padding:10px 14px;font-size:13px;cursor:pointer;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;transition:background .15s;}
+.ac-item:last-child{border-bottom:none;}
+.ac-item:hover,.ac-item:active{background:var(--green-pale);color:var(--green);font-weight:500;}
+.badge{font-size:10px;background:var(--green-pale);color:var(--green);padding:1px 6px;border-radius:20px;font-weight:600;flex-shrink:0;}
+
+.prest-item{background:var(--light);border:1.5px solid var(--border);border-radius:10px;padding:14px;margin-bottom:10px;position:relative;}
+.prest-grid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin-top:10px;}
+.prest-line-total{margin-top:10px;padding-top:8px;border-top:1px dashed var(--border);text-align:right;font-size:12px;color:var(--gray);}
+.prest-line-total strong{color:var(--green);font-weight:600;}
+.remove-btn{position:absolute;top:10px;right:10px;background:none;border:none;cursor:pointer;color:var(--red);font-size:18px;line-height:1;padding:4px 8px;border-radius:4px;transition:background .2s;}
+.remove-btn:hover{background:#FEE2E2;}
+.add-prest-btn{width:100%;padding:12px;border:2px dashed var(--green-light);background:none;border-radius:8px;color:var(--green);font-family:"DM Sans",sans-serif;font-size:14px;font-weight:500;cursor:pointer;transition:all .2s;margin-top:4px;}
+.add-prest-btn:hover{background:var(--green-pale);border-style:solid;}
+
+.gen-btn{width:100%;padding:16px;background:var(--green);color:#fff;border:none;border-radius:10px;font-family:"Cormorant Garamond",serif;font-size:18px;font-weight:700;cursor:pointer;letter-spacing:.5px;transition:all .25s;display:flex;align-items:center;justify-content:center;gap:10px;margin-top:8px;}
+.gen-btn:hover{background:var(--green-light);transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,0,0,.15);}
+.gen-btn:disabled{opacity:.6;cursor:not-allowed;transform:none;}
+
+.preview-panel{padding:28px 32px;background:#E8EDE9;overflow-y:auto;}
+.preview-label{font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--gray);margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+.preview-label::after{content:"";flex:1;height:1px;background:var(--border);}
+
+#invoice-preview{background:#fff;width:100%;max-width:700px;margin:0 auto;padding:48px 52px;box-shadow:0 8px 40px rgba(0,0,0,.12);border-radius:4px;font-family:"DM Sans",sans-serif;font-size:13px;color:#1A1A1A;}
+.inv-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:36px;padding-bottom:24px;border-bottom:2px solid var(--green);gap:20px;}
+.inv-logo{height:130px;object-fit:contain;}
+.inv-logo-placeholder{height:90px;width:90px;background:var(--green-pale);border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--green);font-family:"Cormorant Garamond",serif;font-weight:700;font-size:32px;letter-spacing:1px;}
+.inv-title-block{text-align:right;}
+.inv-title{font-family:"Cormorant Garamond",serif;font-size:28px;font-weight:700;color:var(--green);letter-spacing:1px;}
+.inv-number{font-size:15px;font-weight:600;color:#1A1A1A;margin-top:2px;}
+.inv-date{font-size:12px;color:var(--gray);margin-top:4px;}
+.inv-parties{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:32px;}
+.inv-party-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--green);margin-bottom:8px;}
+.inv-party p{font-size:12.5px;line-height:1.7;}
+.inv-table{width:100%;border-collapse:collapse;margin-bottom:20px;}
+.inv-table thead tr{background:var(--green);color:#fff;}
+.inv-table thead th{padding:10px 12px;text-align:left;font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;}
+.inv-table thead th.right{text-align:right;}
+.inv-table thead th.center{text-align:center;}
+.inv-table tbody tr{border-bottom:1px solid var(--border);}
+.inv-table tbody tr:nth-child(even){background:var(--green-pale);}
+.inv-table tbody td{padding:10px 12px;font-size:12px;line-height:1.5;}
+.inv-table tbody td.right{text-align:right;font-weight:500;}
+.inv-table tbody td.center{text-align:center;}
+.inv-totals{display:flex;flex-direction:column;align-items:flex-end;margin-bottom:12px;}
+.inv-total-row{display:flex;justify-content:space-between;width:240px;padding:5px 0;font-size:13px;border-bottom:1px solid var(--border);color:var(--gray);}
+.inv-total-final{background:var(--green);color:#fff;font-weight:700;font-size:15px;padding:10px 14px;border-radius:4px;margin-top:6px;width:260px;display:flex;justify-content:space-between;}
+.inv-tva-note{font-size:11px;color:var(--gray);font-style:italic;margin-bottom:24px;}
+.inv-footer-block{background:var(--green-pale);border-left:3px solid var(--green);padding:14px 16px;border-radius:0 6px 6px 0;margin-bottom:12px;}
+.inv-footer-block h4{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--green);margin-bottom:8px;}
+.inv-footer-block p{font-size:11.5px;line-height:1.7;}
+.signature-zone{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:8px;}
+.sig-box{border:1.5px dashed var(--green);border-radius:6px;padding:14px;min-height:90px;}
+.sig-box .sig-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--green);margin-bottom:8px;}
+.sig-box .sig-line{border-bottom:1px solid var(--gray);margin-top:30px;font-size:10.5px;color:var(--gray);padding-bottom:2px;}
+.sig-box .sig-mention{font-size:11px;color:#1A1A1A;font-style:italic;}
+.inv-legal{margin-top:16px;padding-top:12px;border-top:1px solid var(--border);font-size:10.5px;color:var(--gray);line-height:1.6;}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center;padding:16px;overflow-y:auto;}
+.modal-overlay.show{display:flex;}
+.modal{background:#fff;border-radius:16px;max-width:600px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.25);}
+.modal-header{padding:24px 28px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:#fff;border-radius:16px 16px 0 0;z-index:10;}
+.modal-title{font-family:"Cormorant Garamond",serif;font-size:24px;font-weight:700;color:var(--green);}
+.modal-close{background:none;border:none;font-size:28px;color:var(--gray);cursor:pointer;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+.modal-close:hover{background:var(--light);}
+.modal-body{padding:24px 28px;}
+.modal-footer{padding:16px 28px;border-top:1px solid var(--border);display:flex;gap:12px;justify-content:flex-end;background:var(--light);border-radius:0 0 16px 16px;position:sticky;bottom:0;}
+.modal-btn{padding:12px 20px;border:none;border-radius:8px;font-family:"DM Sans",sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;}
+.modal-btn-primary{background:var(--green);color:#fff;}
+.modal-btn-primary:hover{background:var(--green-light);}
+.modal-btn-secondary{background:#fff;color:var(--dark);border:1.5px solid var(--border);}
+.modal-btn-secondary:hover{background:var(--light);}
+.modal-btn-danger{background:#fff;color:var(--red);border:1.5px solid var(--red);}
+.modal-btn-danger:hover{background:#FEE2E2;}
+
+.settings-section{margin-bottom:24px;}
+.settings-section h3{font-family:"Cormorant Garamond",serif;font-size:16px;font-weight:600;color:var(--green);margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid var(--border);}
+
+.logo-upload{display:flex;align-items:center;gap:14px;}
+.logo-preview{width:80px;height:80px;border-radius:8px;background:var(--light);border:2px dashed var(--border);display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.logo-preview img{max-width:100%;max-height:100%;object-fit:contain;}
+.logo-preview .placeholder{font-size:11px;color:var(--gray);text-align:center;padding:8px;}
+.logo-upload-btn{flex:1;}
+.logo-upload-btn input[type=file]{display:none;}
+.logo-upload-btn label{display:inline-block;padding:10px 16px;background:var(--green-pale);color:var(--green);border-radius:8px;cursor:pointer;font-size:13px;font-weight:500;border:1.5px solid var(--green);}
+.logo-upload-btn label:hover{background:var(--green);color:#fff;}
+.logo-upload-btn .logo-help{font-size:11px;color:var(--gray);margin-top:6px;}
+.logo-upload-btn .remove-logo{display:inline-block;padding:6px 10px;color:var(--red);background:none;border:none;cursor:pointer;font-size:12px;margin-left:8px;}
+
+.color-picker{display:flex;gap:8px;flex-wrap:wrap;}
+.color-swatch{width:36px;height:36px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:transform .15s;}
+.color-swatch:hover{transform:scale(1.1);}
+.color-swatch.active{border-color:#1A1A1A;box-shadow:0 0 0 2px #fff inset;}
+
+
+/* ── HISTORY PANEL ── */
+.history-panel{position:fixed;top:0;right:-400px;width:380px;max-width:100vw;height:100vh;background:#fff;z-index:500;box-shadow:-8px 0 40px rgba(0,0,0,.15);transition:right .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;}
+.history-panel.open{right:0;}
+.history-header{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--green);color:#fff;flex-shrink:0;}
+.history-header h2{font-family:"Cormorant Garamond",serif;font-size:20px;font-weight:700;}
+.history-close{background:rgba(255,255,255,.15);border:none;color:#fff;width:32px;height:32px;border-radius:50%;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.history-body{flex:1;overflow-y:auto;padding:16px;}
+.history-empty{text-align:center;padding:40px 20px;color:var(--gray);}
+.history-empty svg{margin:0 auto 12px;display:block;opacity:.4;}
+.history-item{border:1.5px solid var(--border);border-radius:10px;padding:14px;margin-bottom:10px;cursor:pointer;transition:all .2s;position:relative;}
+.history-item:hover{border-color:var(--green);box-shadow:0 2px 12px rgba(27,77,62,.1);}
+.history-item .hi-type{display:inline-block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;padding:2px 8px;border-radius:20px;margin-bottom:6px;}
+.history-item .hi-type.facture{background:#EBF2EF;color:var(--green);}
+.history-item .hi-type.devis{background:#FEF3C7;color:#92400E;}
+.history-item .hi-num{font-weight:700;font-size:15px;color:var(--dark);}
+.history-item .hi-client{font-size:13px;color:var(--gray);margin-top:2px;}
+.history-item .hi-amount{font-size:14px;font-weight:600;color:var(--green);margin-top:4px;}
+.history-item .hi-date{font-size:11px;color:var(--gray);margin-top:4px;}
+.history-item .hi-actions{display:flex;gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);}
+.hi-btn{flex:1;padding:8px;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:5px;font-family:"DM Sans",sans-serif;}
+.hi-btn-pdf{background:var(--green);color:#fff;}
+.hi-btn-pdf:hover{background:var(--green-light);}
+.hi-btn-load{background:var(--green-pale);color:var(--green);}
+.hi-btn-load:hover{background:var(--green);color:#fff;}
+.hi-btn-convert{background:#FEF3C7;color:#92400E;}
+.hi-btn-convert:hover{background:#F59E0B;color:#fff;}
+.hi-btn-del{background:#FEE2E2;color:var(--red);}
+.hi-btn-del:hover{background:var(--red);color:#fff;}
+.history-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:499;}
+.history-overlay.show{display:block;}
+.history-badge{position:absolute;top:-6px;right:-6px;background:var(--gold);color:#fff;font-size:10px;font-weight:700;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+
+/* ── DISCOUNT/ACOMPTE ── */
+.discount-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;padding-top:8px;border-top:1px dashed var(--border);}
+
+/* ── LEGAL MENTIONS ── */
+.legal-templates{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;}
+.legal-tpl-btn{padding:5px 10px;border:1.5px solid var(--border);border-radius:20px;background:#fff;font-size:12px;color:var(--gray);cursor:pointer;transition:all .2s;font-family:"DM Sans",sans-serif;}
+.legal-tpl-btn:hover{border-color:var(--green);color:var(--green);background:var(--green-pale);}
+
+/* ── ANIMATIONS (Lot 3) ── */
+@keyframes fadeInUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.6;}}
+@keyframes checkmark{0%{stroke-dashoffset:30;}100%{stroke-dashoffset:0;}}
+@keyframes confetti-fall{0%{transform:translateY(-20px) rotate(0deg);opacity:1;}100%{transform:translateY(100vh) rotate(720deg);opacity:0;}}
+.prest-item{animation:fadeInUp .25s ease;}
+.gen-btn{position:relative;overflow:hidden;}
+.gen-btn::after{content:"";position:absolute;inset:0;background:rgba(255,255,255,.15);transform:translateX(-100%);transition:transform .4s ease;}
+.gen-btn:hover::after{transform:translateX(100%);}
+.gen-btn.loading{pointer-events:none;}
+.gen-btn.loading .btn-spinner{display:flex;}
+.gen-btn.loading .btn-text{display:none;}
+.btn-spinner{display:none;align-items:center;gap:8px;}
+.btn-spinner svg{animation:pulse .8s infinite;}
+.form-section{animation:fadeInUp .3s ease;}
+input:valid:not(:placeholder-shown){border-color:var(--green);}
+.history-item{animation:fadeInUp .2s ease;}
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);background:#1A1A1A;color:#fff;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:500;z-index:1000;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.confetti-container{position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:9999;}
+
+@media(max-width:900px){
+  .app-header{padding:12px 16px;}
+  .app-header h1{font-size:16px;}
+  .mode-toggle{padding:16px 16px 0;}
+  .workspace{grid-template-columns:1fr;}
+  .form-panel{padding:20px 16px;border-right:none;}
+  .preview-panel{padding:16px;}
+  #invoice-preview{padding:24px 20px;font-size:12px;}
+  .inv-header{flex-direction:column;gap:16px;align-items:center;text-align:center;}
+  .inv-title-block{text-align:center;}
+  .inv-logo{height:90px;}
+  .inv-parties{grid-template-columns:1fr;}
+  .signature-zone{grid-template-columns:1fr;}
+  .inv-table thead th,.inv-table tbody td{padding:8px 6px;font-size:11px;}
+  .inv-total-row,.inv-total-final{width:100%;}
+  .form-grid{grid-template-columns:1fr;}
+  .prest-grid{grid-template-columns:1fr 1fr;}
+  input,textarea,select{padding:13px 14px;font-size:16px;}
+  .gen-btn{padding:18px;font-size:17px;}
+  .toggle-btn{padding:14px 12px;font-size:15px;}
+  .modal{max-height:100vh;border-radius:0;}
+  .modal-header,.modal-body,.modal-footer{padding-left:18px;padding-right:18px;}
+}
+
+.preview-toggle-fab{display:none;position:fixed;bottom:20px;right:20px;width:56px;height:56px;border-radius:50%;background:var(--green);color:#fff;border:none;box-shadow:0 6px 20px rgba(0,0,0,.25);z-index:99;cursor:pointer;align-items:center;justify-content:center;}
+.preview-toggle-fab svg{width:24px;height:24px;}
+
+/* ── HISTORY PANEL ── */
+.history-panel{position:fixed;top:0;right:-400px;width:380px;max-width:100vw;height:100vh;background:#fff;z-index:500;box-shadow:-8px 0 40px rgba(0,0,0,.15);transition:right .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;}
+.history-panel.open{right:0;}
+.history-header{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--green);color:#fff;flex-shrink:0;}
+.history-header h2{font-family:"Cormorant Garamond",serif;font-size:20px;font-weight:700;}
+.history-close{background:rgba(255,255,255,.15);border:none;color:#fff;width:32px;height:32px;border-radius:50%;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.history-body{flex:1;overflow-y:auto;padding:16px;}
+.history-empty{text-align:center;padding:40px 20px;color:var(--gray);}
+.history-empty svg{margin:0 auto 12px;display:block;opacity:.4;}
+.history-item{border:1.5px solid var(--border);border-radius:10px;padding:14px;margin-bottom:10px;cursor:pointer;transition:all .2s;position:relative;}
+.history-item:hover{border-color:var(--green);box-shadow:0 2px 12px rgba(27,77,62,.1);}
+.history-item .hi-type{display:inline-block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;padding:2px 8px;border-radius:20px;margin-bottom:6px;}
+.history-item .hi-type.facture{background:#EBF2EF;color:var(--green);}
+.history-item .hi-type.devis{background:#FEF3C7;color:#92400E;}
+.history-item .hi-num{font-weight:700;font-size:15px;color:var(--dark);}
+.history-item .hi-client{font-size:13px;color:var(--gray);margin-top:2px;}
+.history-item .hi-amount{font-size:14px;font-weight:600;color:var(--green);margin-top:4px;}
+.history-item .hi-date{font-size:11px;color:var(--gray);margin-top:4px;}
+.history-item .hi-actions{display:flex;gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);}
+.hi-btn{flex:1;padding:8px;border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:5px;font-family:"DM Sans",sans-serif;}
+.hi-btn-pdf{background:var(--green);color:#fff;}
+.hi-btn-pdf:hover{background:var(--green-light);}
+.hi-btn-load{background:var(--green-pale);color:var(--green);}
+.hi-btn-load:hover{background:var(--green);color:#fff;}
+.hi-btn-convert{background:#FEF3C7;color:#92400E;}
+.hi-btn-convert:hover{background:#F59E0B;color:#fff;}
+.hi-btn-del{background:#FEE2E2;color:var(--red);}
+.hi-btn-del:hover{background:var(--red);color:#fff;}
+.history-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:499;}
+.history-overlay.show{display:block;}
+.history-badge{position:absolute;top:-6px;right:-6px;background:var(--gold);color:#fff;font-size:10px;font-weight:700;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+
+/* ── DISCOUNT/ACOMPTE ── */
+.discount-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;padding-top:8px;border-top:1px dashed var(--border);}
+
+/* ── LEGAL MENTIONS ── */
+.legal-templates{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;}
+.legal-tpl-btn{padding:5px 10px;border:1.5px solid var(--border);border-radius:20px;background:#fff;font-size:12px;color:var(--gray);cursor:pointer;transition:all .2s;font-family:"DM Sans",sans-serif;}
+.legal-tpl-btn:hover{border-color:var(--green);color:var(--green);background:var(--green-pale);}
+
+/* ── ANIMATIONS (Lot 3) ── */
+@keyframes fadeInUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.6;}}
+@keyframes checkmark{0%{stroke-dashoffset:30;}100%{stroke-dashoffset:0;}}
+@keyframes confetti-fall{0%{transform:translateY(-20px) rotate(0deg);opacity:1;}100%{transform:translateY(100vh) rotate(720deg);opacity:0;}}
+.prest-item{animation:fadeInUp .25s ease;}
+.gen-btn{position:relative;overflow:hidden;}
+.gen-btn::after{content:"";position:absolute;inset:0;background:rgba(255,255,255,.15);transform:translateX(-100%);transition:transform .4s ease;}
+.gen-btn:hover::after{transform:translateX(100%);}
+.gen-btn.loading{pointer-events:none;}
+.gen-btn.loading .btn-spinner{display:flex;}
+.gen-btn.loading .btn-text{display:none;}
+.btn-spinner{display:none;align-items:center;gap:8px;}
+.btn-spinner svg{animation:pulse .8s infinite;}
+.form-section{animation:fadeInUp .3s ease;}
+input:valid:not(:placeholder-shown){border-color:var(--green);}
+.history-item{animation:fadeInUp .2s ease;}
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);background:#1A1A1A;color:#fff;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:500;z-index:1000;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.confetti-container{position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:9999;}
+
+@media(max-width:900px){
+  .preview-toggle-fab{display:flex;}
+  .preview-panel{display:none;}
+  .preview-panel.show-mobile{display:block;position:fixed;top:0;left:0;right:0;bottom:0;z-index:200;overflow-y:auto;background:#E8EDE9;padding-top:60px;}
+  .preview-panel.show-mobile .close-preview{display:flex;position:fixed;top:12px;right:12px;width:44px;height:44px;border-radius:50%;background:var(--green);color:#fff;border:none;align-items:center;justify-content:center;cursor:pointer;font-size:24px;z-index:300;box-shadow:0 4px 12px rgba(0,0,0,.2);}
+}
+.close-preview{display:none;}
+
+.welcome-overlay{display:none;position:fixed;inset:0;background:linear-gradient(135deg,#1B4D3E,#2D6A55);z-index:2000;align-items:center;justify-content:center;padding:24px;}
+.welcome-overlay.show{display:flex;}
+.welcome-card{background:#fff;border-radius:20px;max-width:500px;width:100%;padding:40px 32px;text-align:center;box-shadow:0 30px 80px rgba(0,0,0,.3);}
+.welcome-card h2{font-family:"Cormorant Garamond",serif;font-size:32px;font-weight:700;color:var(--green);margin-bottom:12px;}
+.welcome-card p{color:var(--gray);font-size:15px;line-height:1.6;margin-bottom:24px;}
+.welcome-card .features{text-align:left;margin:20px 0;padding:16px;background:var(--green-pale);border-radius:10px;}
+.welcome-card .features div{padding:6px 0;font-size:14px;color:var(--dark);display:flex;align-items:center;gap:8px;}
+.welcome-card .features svg{color:var(--green);flex-shrink:0;}
+.welcome-card button{width:100%;padding:16px;background:var(--green);color:#fff;border:none;border-radius:10px;font-family:"Cormorant Garamond",serif;font-size:18px;font-weight:700;cursor:pointer;margin-top:8px;}
+</style>
+</head>
+<body>
+<div class="welcome-overlay" id="welcome-overlay">
+<div class="welcome-card">
+<h2>Bienvenue sur FacturePro</h2>
+<p>Cr&eacute;ez vos devis et factures professionnels en quelques secondes.<br>Configurez d'abord votre entreprise.</p>
+<div class="features">
+<div><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" width="18" height="18"><path d="M5 13l4 4L19 7"/></svg> 100% personnalisable (logo, couleurs)</div>
+<div><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" width="18" height="18"><path d="M5 13l4 4L19 7"/></svg> Mode Devis et Mode Facture</div>
+<div><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" width="18" height="18"><path d="M5 13l4 4L19 7"/></svg> Fonctionne hors-ligne, donn&eacute;es priv&eacute;es</div>
+<div><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" width="18" height="18"><path d="M5 13l4 4L19 7"/></svg> Gestion TVA pour le BTP</div>
+</div>
+<button onclick="startSetup()">Configurer mon entreprise</button>
+</div></div>
+<header class="app-header">
+<div class="logo-zone">
+<div id="header-logo-container"></div>
+<h1 id="app-title">FacturePro</h1>
+</div>
+<button class="icon-btn" onclick="openSettings()" title="Paramètres">
+<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+</button>
+<button class="icon-btn" id="history-toggle-btn" onclick="toggleHistory()" title="Historique des documents" style="position:relative">
+<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="18" height="18"><path d="M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></svg>
+<span id="history-badge" class="history-badge" style="display:none">0</span>
+</button>
+<button class="icon-btn" onclick="exportCSV()" title="Exporter mes clients en CSV">
+<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+</button>
+<button class="icon-btn" onclick="resetForm()" title="Nouveau document">
+<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8M21 3v5h-5M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16M3 21v-5h5"/></svg>
+</button>
+</header>
+<div class="mode-toggle">
+<div class="toggle-wrap">
+<button class="toggle-btn" id="btn-mode-facture" onclick="setMode('facture')">Mode Facture</button>
+<button class="toggle-btn active" id="btn-mode-devis" onclick="setMode('devis')">Mode Devis</button>
+</div>
+</div>
+<div class="workspace">
+<div class="form-panel">
+<div class="form-section">
+<div class="section-title"><span class="dot"></span><span id="info-section-title">Informations de la facture</span></div>
+<div class="form-grid">
+<div class="field"><label id="lbl-num">Numéro de facture</label><input type="text" id="inv-number" oninput="updatePreview();saveData()"></div>
+<div class="field"><label>Date d'émission</label><input type="date" id="inv-date" oninput="updatePreview();saveData()"></div>
+<div class="field"><label id="lbl-echeance">Échéance de paiement</label>
+<div class="ac-wrap">
+<input type="text" id="inv-echeance" autocomplete="off" placeholder="ex : Sous 30 jours" onfocus="showAC('echeance',this.value)" oninput="showAC('echeance',this.value);updatePreview();saveData()" onblur="hideAC('echeance')">
+<div class="ac-list" id="ac-echeance"></div></div></div>
+<div class="field"><label>Objet / Référence</label><input type="text" id="inv-object" placeholder="ex : Prestation de services" oninput="updatePreview();saveData()"></div>
+</div></div>
+<div class="form-section">
+<div class="section-title"><span class="dot"></span>Informations client</div>
+<div class="form-grid">
+<div class="field"><label>Nom / Entreprise</label>
+<div class="ac-wrap">
+<input type="text" id="client-name" autocomplete="off" placeholder="Nom du client" onfocus="showAC('clientName',this.value)" oninput="showAC('clientName',this.value);updatePreview();saveData()" onblur="hideAC('clientName')">
+<div class="ac-list" id="ac-clientName"></div></div></div>
+<div class="field"><label>Contact (nom)</label><input type="text" id="client-contact" placeholder="Personne à contacter" oninput="updatePreview();saveData()"></div>
+</div>
+<div class="form-grid full" style="margin-top:12px">
+<div class="field"><label>Adresse</label>
+<div class="ac-wrap">
+<input type="text" id="client-address" autocomplete="off" placeholder="Adresse complète" onfocus="showAC('clientAddress',this.value)" oninput="showAC('clientAddress',this.value);updatePreview();saveData()" onblur="hideAC('clientAddress')">
+<div class="ac-list" id="ac-clientAddress"></div></div></div>
+</div>
+<div class="form-grid" style="margin-top:12px">
+<div class="field"><label>Téléphone</label>
+<div class="ac-wrap">
+<input type="tel" inputmode="tel" id="client-phone" autocomplete="off" placeholder="Numéro de téléphone" onfocus="showAC('clientPhone',this.value)" oninput="showAC('clientPhone',this.value);updatePreview();saveData()" onblur="hideAC('clientPhone');this.value=formatPhone(this.value);updatePreview();">
+<div class="ac-list" id="ac-clientPhone"></div></div></div>
+<div class="field"><label>Email</label><input type="email" inputmode="email" autocomplete="off" id="client-email" placeholder="email@exemple.com" oninput="updatePreview();saveData()"></div>
+</div></div>
+<div class="form-section">
+<div class="section-title"><span class="dot"></span>Prestations</div>
+<div id="prest-container"></div>
+<button class="add-prest-btn" onclick="addPrest()">+ Ajouter une prestation</button>
+</div>
+<div class="action-row">
+<button class="gen-btn" id="gen-btn" onclick="generatePDF()">
+<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="20" height="20"><path d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+<span id="gen-btn-text">Générer la Facture PDF</span>
+</button>
+<button class="email-btn" id="email-btn" onclick="sendByEmail()" title="Envoyer par email">
+<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" width="20" height="20"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+</button>
+</div>
+</div>
+<div class="preview-panel" id="preview-panel">
+<button class="close-preview" onclick="togglePreview()">&times;</button>
+<div class="preview-label">Aperçu en temps réel</div>
+<div id="invoice-preview">
+<div class="inv-header">
+<div id="prev-logo-container"></div>
+<div class="inv-title-block">
+<div class="inv-title" id="prev-title">FACTURE</div>
+<div class="inv-number" id="prev-number">N°</div>
+<div class="inv-date" id="prev-date"></div>
+<div class="inv-date" id="prev-echeance-top" style="color:var(--green);font-weight:500;margin-top:2px"></div>
+</div></div>
+<div class="inv-parties">
+<div class="inv-party"><div class="inv-party-label">Émetteur</div><p id="prev-emitter">Configurez vos infos dans les paramètres ⚙️</p></div>
+<div class="inv-party"><div class="inv-party-label">Client</div><p id="prev-client">—</p></div>
+</div>
+<div id="prev-obj-line" style="margin-bottom:16px;font-size:13px;color:var(--green);font-weight:600;display:none">Objet : <span id="prev-obj"></span></div>
+<table class="inv-table"><thead><tr id="prev-thead"></tr></thead><tbody id="prev-tbody"></tbody></table>
+<div class="inv-totals" id="prev-totals"></div>
+<div class="inv-tva-note" id="prev-tva-note">TVA non applicable, art. 293 B du CGI</div>
+<div id="prev-footer-block"></div>
+<div class="inv-legal" id="prev-legal"></div>
+</div></div>
+</div>
+<button class="preview-toggle-fab" onclick="togglePreview()" title="Voir l'aperçu">
+<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+</button>
+<div class="modal-overlay" id="settings-modal">
+<div class="modal">
+<div class="modal-header">
+<div class="modal-title">Paramètres de mon entreprise</div>
+<button class="modal-close" onclick="closeSettings()">&times;</button>
+</div>
+<div class="modal-body">
+<div class="settings-section">
+<h3>Logo de l'entreprise</h3>
+<div class="logo-upload">
+<div class="logo-preview" id="settings-logo-preview"><div class="placeholder">Aucun logo</div></div>
+<div class="logo-upload-btn">
+<label for="logo-input">📁 Choisir un fichier</label>
+<input type="file" id="logo-input" accept="image/*" onchange="handleLogoUpload(event)">
+<button class="remove-logo" onclick="removeLogo()" id="remove-logo-btn" style="display:none">Supprimer</button>
+<div class="logo-help">PNG ou JPG, idéalement carré ou rectangle large</div>
+</div>
+</div></div>
+<div class="settings-section">
+<h3>Couleur principale</h3>
+<div class="color-picker" id="color-picker"></div>
+</div>
+<div class="settings-section">
+<h3>Identité</h3>
+<div class="form-grid full">
+<div class="field"><label>Nom de l'entreprise *</label><input type="text" id="set-name" placeholder="Ex: Mon Entreprise"></div>
+</div>
+<div class="form-grid full" style="margin-top:12px">
+<div class="field"><label>Adresse complète *</label><input type="text" id="set-address" placeholder="Numéro, rue, code postal, ville"></div>
+</div>
+<div class="form-grid" style="margin-top:12px">
+<div class="field"><label>Email *</label><input type="email" inputmode="email" id="set-email" placeholder="contact@entreprise.fr"></div>
+<div class="field"><label>Téléphone *</label><input type="tel" inputmode="tel" id="set-phone" placeholder="06 XX XX XX XX" onblur="this.value=formatPhone(this.value)"></div>
+</div></div>
+<div class="settings-section">
+<h3>Informations légales</h3>
+<div class="form-grid">
+<div class="field"><label>SIRET *</label><input type="text" inputmode="numeric" id="set-siret" placeholder="14 chiffres"></div>
+<div class="field"><label>Code APE / NAF</label><input type="text" id="set-ape" placeholder="Ex: 4321A"></div>
+</div>
+<div class="form-grid full" style="margin-top:12px">
+<div class="field"><label>Statut juridique</label><select id="set-legal-status"><option value="">— Choisir —</option><option value="auto-entrepreneur">Auto-entrepreneur / Micro-entreprise</option><option value="ei">Entreprise Individuelle</option><option value="eurl">EURL</option><option value="sarl">SARL</option><option value="sas">SAS</option><option value="sasu">SASU</option><option value="other">Autre</option></select></div>
+</div>
+<div class="form-grid full" style="margin-top:12px">
+<div class="field"><label>N° TVA Intracommunautaire (si assujetti)</label><input type="text" id="set-tva-num" placeholder="Ex: FR12345678901 (laisser vide si auto-entrepreneur)"></div>
+</div></div>
+<div class="settings-section">
+<h3>Coordonnées bancaires (pour les factures)</h3>
+<div class="form-grid full">
+<div class="field"><label>IBAN</label><input type="text" id="set-iban" placeholder="FR76 ..." onblur="this.value=formatIBAN(this.value)"></div>
+</div>
+<div class="form-grid full" style="margin-top:12px">
+<div class="field"><label>BIC / SWIFT</label><input type="text" id="set-bic" placeholder="Ex: CMCIFRPP"></div>
+</div></div>
+<div class="settings-section">
+<h3>Mentions l&eacute;gales personnalis&eacute;es</h3>
+<p style="font-size:12px;color:var(--gray);margin-bottom:10px">Ces mentions s'afficheront en bas de chaque devis et facture. Laissez vide si aucune mention sp&eacute;cifique.</p>
+<div class="legal-templates">
+<button class="legal-tpl-btn" onclick="applyLegalTemplate('auto')">Auto-entrepreneur</button>
+<button class="legal-tpl-btn" onclick="applyLegalTemplate('btp')">Artisan BTP</button>
+<button class="legal-tpl-btn" onclick="applyLegalTemplate('liberal')">Profession lib&eacute;rale</button>
+<button class="legal-tpl-btn" onclick="applyLegalTemplate('consultant')">Consultant</button>
+<button class="legal-tpl-btn" onclick="applyLegalTemplate('vide')">Vider</button>
+</div>
+<div class="form-grid full">
+<div class="field"><label>Mentions l&eacute;gales (texte libre)</label>
+<textarea id="set-legal-custom" rows="4" placeholder="Ex: Assurance d&eacute;cennale n&deg;XXXX - Assureur : XYZ&#10;M&eacute;diateur : [nom et coordonn&eacute;es]&#10;..."></textarea>
+</div></div>
+</div>
+<div class="settings-section">
+<h3 style="color:var(--red)">Zone dangereuse</h3>
+<button class="modal-btn modal-btn-danger" onclick="resetAll()">🗑️ Effacer toutes mes données</button>
+<div style="font-size:11px;color:var(--gray);margin-top:6px">Supprime vos paramètres, suggestions et historique. Irréversible.</div>
+</div>
+</div>
+<div class="modal-footer">
+<button class="modal-btn modal-btn-secondary" onclick="closeSettings()">Annuler</button>
+<button class="modal-btn modal-btn-primary" onclick="saveSettings()">Enregistrer</button>
+</div>
+</div></div>
+<div class="history-overlay" id="history-overlay" onclick="toggleHistory()"></div>
+<div class="history-panel" id="history-panel">
+<div class="history-header">
+<h2>Historique</h2>
+<button class="history-close" onclick="toggleHistory()">&times;</button>
+</div>
+<div class="history-body" id="history-body">
+<div class="history-empty"><svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="40" height="40"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg><p>Aucun document<br>pour le moment</p></div>
+</div>
+</div>
+<div class="toast" id="toast"></div>
+<div class="confetti-container" id="confetti-container"></div>
+<script>
+
+var STORAGE_KEY = "facturepro_data_v1";
+var COUNTERS_KEY = "facturepro_counters_v1";
+var SETTINGS_KEY = "facturepro_settings_v1";
+
+var EMPTY_EMITTER = {
+  name: "", address: "", email: "", phone: "",
+  siret: "", ape: "", legalStatus: "", tvaNum: "",
+  iban: "", bic: "", logo: "", color: "#1B4D3E"
+};
+
+var DEFAULT_MEMORY = {
+  echeance: [
+    "Sous 30 jours \u00e0 compter de la date d'\u00e9mission de la facture",
+    "\u00c0 r\u00e9ception de la facture",
+    "Sous 15 jours",
+    "Sous 45 jours"
+  ],
+  validite: [
+    "3 mois", "1 mois", "2 mois", "Validit\u00e9 jusqu'au [date]"
+  ],
+  clientName: [],
+  clientAddress: [],
+  clientPhone: []
+};
+
+var DEFAULT_PREST_DESC = [
+  "Prestation de services",
+  "R\u00e9novation - main d'\u0153uvre",
+  "Fourniture de mat\u00e9riaux",
+  "D\u00e9placement / forfait"
+];
+
+var COLOR_PRESETS = [
+  {name:"Vert bouteille", value:"#1B4D3E", light:"#2D6A55", pale:"#EBF2EF"},
+  {name:"Bleu marine", value:"#1E3A5F", light:"#2D5180", pale:"#E8EEF5"},
+  {name:"Bordeaux", value:"#7A1E2E", light:"#9C2D40", pale:"#F5E8EB"},
+  {name:"Anthracite", value:"#2C3E50", light:"#34495E", pale:"#ECF0F1"},
+  {name:"Or", value:"#8B6914", light:"#A8801A", pale:"#F5EFE0"},
+  {name:"Violet", value:"#4A2C5A", light:"#5C3870", pale:"#EFE8F2"},
+  {name:"Orange brûlé", value:"#A0522D", light:"#BC6238", pale:"#F5EBE5"},
+  {name:"Noir", value:"#1A1A1A", light:"#333333", pale:"#EEEEEE"}
+];
+
+var AC_MAP = {
+  echeance: "inv-echeance",
+  validite: "inv-echeance",
+  clientName: "client-name",
+  clientAddress: "client-address",
+  clientPhone: "client-phone"
+};
+
+var currentMode = "devis";
+var EMITTER = JSON.parse(JSON.stringify(EMPTY_EMITTER));
+var MEMORY = JSON.parse(JSON.stringify(DEFAULT_MEMORY));
+var PREST_DESC = DEFAULT_PREST_DESC.slice();
+var CLIENT_DB = {};
+
+// ============================================================
+// SETTINGS / EMITTER PERSISTENCE
+// ============================================================
+function loadSettings() {
+  try {
+    var raw = localStorage.getItem(SETTINGS_KEY);
+    if (raw) {
+      EMITTER = Object.assign({}, EMPTY_EMITTER, JSON.parse(raw));
+      applyTheme(EMITTER.color);
+      updateAppHeader();
+      return true;
+    }
+  } catch(e) {}
+  return false;
+}
+
+function saveSettingsToStorage() {
+  localStorage.setItem(SETTINGS_KEY, JSON.stringify(EMITTER));
+}
+
+function applyTheme(color) {
+  var preset = COLOR_PRESETS.find(function(p){ return p.value === color; }) || COLOR_PRESETS[0];
+  document.documentElement.style.setProperty("--green", preset.value);
+  document.documentElement.style.setProperty("--green-light", preset.light);
+  document.documentElement.style.setProperty("--green-pale", preset.pale);
+  var meta = document.getElementById("theme-color-meta");
+  if (meta) meta.setAttribute("content", preset.value);
+}
+
+function updateAppHeader() {
+  var container = document.getElementById("header-logo-container");
+  if (EMITTER.logo) {
+    container.innerHTML = '<img src="' + EMITTER.logo + '" class="logo" alt="Logo">';
+  } else {
+    var initial = (EMITTER.name || "F").trim().charAt(0).toUpperCase();
+    container.innerHTML = '<div class="logo-fallback">' + initial + '</div>';
+  }
+  document.getElementById("app-title").textContent = EMITTER.name || "FacturePro";
+}
+
+// ============================================================
+// SETTINGS MODAL
+// ============================================================
+function openSettings() {
+  document.getElementById("set-name").value = EMITTER.name || "";
+  document.getElementById("set-address").value = EMITTER.address || "";
+  document.getElementById("set-email").value = EMITTER.email || "";
+  document.getElementById("set-phone").value = EMITTER.phone || "";
+  document.getElementById("set-siret").value = EMITTER.siret || "";
+  document.getElementById("set-ape").value = EMITTER.ape || "";
+  document.getElementById("set-legal-status").value = EMITTER.legalStatus || "";
+  document.getElementById("set-tva-num").value = EMITTER.tvaNum || "";
+  document.getElementById("set-iban").value = EMITTER.iban || "";
+  document.getElementById("set-bic").value = EMITTER.bic || "";
+  document.getElementById("set-legal-custom").value = EMITTER.legalCustom || "";
+  refreshLogoPreview();
+  refreshColorPicker();
+  document.getElementById("settings-modal").classList.add("show");
+}
+
+function closeSettings() {
+  document.getElementById("settings-modal").classList.remove("show");
+}
+
+function refreshLogoPreview() {
+  var preview = document.getElementById("settings-logo-preview");
+  var removeBtn = document.getElementById("remove-logo-btn");
+  if (EMITTER.logo) {
+    preview.innerHTML = '<img src="' + EMITTER.logo + '" alt="Logo">';
+    removeBtn.style.display = "inline-block";
+  } else {
+    preview.innerHTML = '<div class="placeholder">Aucun logo</div>';
+    removeBtn.style.display = "none";
+  }
+}
+
+function refreshColorPicker() {
+  var container = document.getElementById("color-picker");
+  container.innerHTML = "";
+  COLOR_PRESETS.forEach(function(p){
+    var swatch = document.createElement("div");
+    swatch.className = "color-swatch" + (EMITTER.color === p.value ? " active" : "");
+    swatch.style.background = p.value;
+    swatch.title = p.name;
+    swatch.onclick = function(){
+      EMITTER.color = p.value;
+      refreshColorPicker();
+    };
+    container.appendChild(swatch);
+  });
+}
+
+function handleLogoUpload(e) {
+  var file = e.target.files[0];
+  if (!file) return;
+  if (file.size > 5 * 1024 * 1024) {
+    alert("Image trop lourde (max 5 Mo). Choisissez une image plus petite.");
+    return;
+  }
+  var reader = new FileReader();
+  reader.onload = function(evt) {
+    compressImage(evt.target.result, 600, 0.85, function(compressed){
+      EMITTER.logo = compressed;
+      refreshLogoPreview();
+    });
+  };
+  reader.readAsDataURL(file);
+}
+
+function compressImage(dataUrl, maxDim, quality, callback) {
+  var img = new Image();
+  img.onload = function() {
+    var w = img.width, h = img.height;
+    if (w > maxDim || h > maxDim) {
+      if (w > h) { h = h * (maxDim / w); w = maxDim; }
+      else { w = w * (maxDim / h); h = maxDim; }
+    }
+    var canvas = document.createElement("canvas");
+    canvas.width = w;
+    canvas.height = h;
+    var ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#FFFFFF";
+    ctx.fillRect(0, 0, w, h);
+    ctx.drawImage(img, 0, 0, w, h);
+    callback(canvas.toDataURL("image/jpeg", quality));
+  };
+  img.onerror = function() { callback(dataUrl); };
+  img.src = dataUrl;
+}
+
+function removeLogo() {
+  EMITTER.logo = "";
+  document.getElementById("logo-input").value = "";
+  refreshLogoPreview();
+}
+
+function saveSettings() {
+  // Validation
+  var name = document.getElementById("set-name").value.trim();
+  var address = document.getElementById("set-address").value.trim();
+  var email = document.getElementById("set-email").value.trim();
+  var phone = document.getElementById("set-phone").value.trim();
+  var siret = document.getElementById("set-siret").value.trim();
+
+  if (!name || !address || !email || !phone || !siret) {
+    alert("Merci de remplir au minimum : nom, adresse, email, t\u00e9l\u00e9phone et SIRET.");
+    return;
+  }
+
+  EMITTER.name = name;
+  EMITTER.address = address;
+  EMITTER.email = email;
+  EMITTER.phone = phone;
+  EMITTER.siret = siret;
+  EMITTER.ape = document.getElementById("set-ape").value.trim();
+  EMITTER.legalStatus = document.getElementById("set-legal-status").value;
+  EMITTER.tvaNum = document.getElementById("set-tva-num").value.trim();
+  EMITTER.iban = document.getElementById("set-iban").value.trim();
+  EMITTER.bic = document.getElementById("set-bic").value.trim();
+
+  EMITTER.legalCustom = document.getElementById("set-legal-custom").value;
+
+  saveSettingsToStorage();
+  applyTheme(EMITTER.color);
+  updateAppHeader();
+  updatePreview();
+  closeSettings();
+  showToast("\u2705 Param\u00e8tres enregistr\u00e9s !");
+}
+
+function resetAll() {
+  if (!confirm("\u26a0\ufe0f Effacer TOUTES vos donn\u00e9es ?\n\nCela supprime :\n- Vos param\u00e8tres entreprise\n- Tous vos clients enregistr\u00e9s\n- L'historique des suggestions\n- Le formulaire en cours\n\nCette action est IRR\u00c9VERSIBLE.")) return;
+  if (!confirm("Confirmer l'effacement total ?")) return;
+  localStorage.removeItem(SETTINGS_KEY);
+  localStorage.removeItem(STORAGE_KEY);
+  localStorage.removeItem(COUNTERS_KEY);
+  location.reload();
+}
+
+function startSetup() {
+  document.getElementById("welcome-overlay").classList.remove("show");
+  openSettings();
+}
+
+// ============================================================
+// FORM DATA PERSISTENCE
+// ============================================================
+function loadData() {
+  try {
+    var raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return;
+    var data = JSON.parse(raw);
+
+    if (data.memory) MEMORY = Object.assign({}, DEFAULT_MEMORY, data.memory);
+    if (data.prestDesc) PREST_DESC = data.prestDesc;
+    if (data.clientDB) CLIENT_DB = data.clientDB;
+
+    if (data.form) {
+      Object.keys(data.form).forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el && el.value !== undefined && id !== "_prestations") el.value = data.form[id];
+      });
+    }
+    if (data.mode) setMode(data.mode, true);
+  } catch(e) {}
+}
+
+function saveData() {
+  try {
+    var formIds = ["inv-number","inv-date","inv-echeance","inv-object",
+                   "client-name","client-contact","client-address","client-phone","client-email"];
+    var form = {};
+    formIds.forEach(function(id){
+      var el = document.getElementById(id);
+      if (el) form[id] = el.value;
+    });
+    form._prestations = getPrestations();
+    var data = { memory: MEMORY, prestDesc: PREST_DESC, clientDB: CLIENT_DB, form: form, mode: currentMode };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  } catch(e) {}
+}
+
+function loadCounters() {
+  try { var raw = localStorage.getItem(COUNTERS_KEY); if (raw) return JSON.parse(raw); } catch(e) {}
+  return { facture: 1, devis: 1 };
+}
+
+function saveCounters(c) { localStorage.setItem(COUNTERS_KEY, JSON.stringify(c)); }
+
+function incrementCounter() {
+  var c = loadCounters();
+  // Always base next number on what was actually just used (displayed value)
+  var displayed = document.getElementById("inv-number").value.trim();
+  var match = displayed.match(/(\d{4})(\d+)$/);
+  if (match) {
+    var usedNum = parseInt(match[2], 10);
+    // Set counter to the used number so next = used + 1
+    c[currentMode] = usedNum;
+  }
+  c[currentMode]++;
+  saveCounters(c);
+  // Immediately update the input to next number
+  document.getElementById("inv-number").value = formatNumber(c[currentMode]);
+  saveData();
+  updatePreview();
+}
+
+function getNextNumber() {
+  var c = loadCounters();
+  return formatNumber(c[currentMode]);
+}
+
+function formatNumber(n) {
+  var year = new Date().getFullYear();
+  return year + String(n).padStart(3,"0");
+}
+
+function resetForm() {
+  if (!confirm("Cr\u00e9er un nouveau document ?\n(Les champs seront vid\u00e9s mais vos param\u00e8tres et clients sont conserv\u00e9s)")) return;
+  ["inv-object","client-name","client-contact","client-address","client-phone","client-email"].forEach(function(id){
+    var el = document.getElementById(id);
+    if (el) el.value = "";
+  });
+  document.getElementById("inv-date").value = new Date().toISOString().split("T")[0];
+  var c = loadCounters();
+  document.getElementById("inv-number").value = formatNumber(c[currentMode]);
+  document.getElementById("prest-container").innerHTML = "";
+  prestCount = 0;
+  addPrest();
+  saveData();
+  updatePreview();
+}
+
+// ============================================================
+// MODE TOGGLE
+// ============================================================
+function setMode(mode, silent) {
+  currentMode = mode;
+  document.getElementById("btn-mode-facture").classList.toggle("active", mode === "facture");
+  document.getElementById("btn-mode-devis").classList.toggle("active", mode === "devis");
+
+  if (mode === "devis") {
+    document.getElementById("info-section-title").textContent = "Informations du devis";
+    document.getElementById("lbl-num").textContent = "Num\u00e9ro de devis";
+    document.getElementById("lbl-echeance").textContent = "Validit\u00e9 du devis";
+    document.getElementById("inv-echeance").placeholder = "ex : 3 mois";
+    document.getElementById("gen-btn-text").textContent = "G\u00e9n\u00e9rer le Devis PDF";
+  } else {
+    document.getElementById("info-section-title").textContent = "Informations de la facture";
+    document.getElementById("lbl-num").textContent = "Num\u00e9ro de facture";
+    document.getElementById("lbl-echeance").textContent = "\u00c9ch\u00e9ance de paiement";
+    document.getElementById("inv-echeance").placeholder = "ex : Sous 30 jours";
+    document.getElementById("gen-btn-text").textContent = "G\u00e9n\u00e9rer la Facture PDF";
+  }
+
+  if (!silent) {
+    var c = loadCounters();
+    document.getElementById("inv-number").value = formatNumber(c[mode]);
+    saveData();
+  }
+  updatePreview();
+}
+
+// Always get the right next number when switching modes
+function refreshNumberForMode() {
+  var c = loadCounters();
+  var el = document.getElementById("inv-number");
+  if (el && !el.dataset.manuallyEdited) {
+    el.value = formatNumber(c[currentMode]);
+  }
+}
+
+// ============================================================
+// AUTOCOMPLETE
+// ============================================================
+function esc(s) {
+  return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+
+function showAC(field, val) {
+  var listEl = document.getElementById("ac-" + field);
+  if (!listEl) return;
+  var actualField = field;
+  if (field === "echeance" && currentMode === "devis") actualField = "validite";
+  var suggestions = MEMORY[actualField] || [];
+  var q = (val||"").toLowerCase();
+  var filtered = q === "" ? suggestions : suggestions.filter(function(s){ return s.toLowerCase().indexOf(q) !== -1; });
+  if (!filtered.length) { listEl.style.display = "none"; return; }
+  var html = "";
+  for (var i = 0; i < filtered.length; i++) {
+    html += "<div class=\"ac-item\" data-val=\"" + esc(filtered[i]) + "\" data-field=\"" + field + "\" onmousedown=\"pickAC(event)\" ontouchstart=\"pickAC(event)\"><span class=\"badge\">Suggestion</span> " + esc(filtered[i]) + "</div>";
+  }
+  listEl.innerHTML = html;
+  listEl.style.display = "block";
+}
+
+function pickAC(e) {
+  e.preventDefault();
+  var el = e.currentTarget;
+  var val = el.dataset.val;
+  var field = el.dataset.field;
+  var inputId = AC_MAP[field];
+  if (inputId) document.getElementById(inputId).value = val;
+  document.getElementById("ac-" + field).style.display = "none";
+  if (field === "clientName") autoFillClient(val);
+  saveData();
+  updatePreview();
+}
+
+function hideAC(field) {
+  setTimeout(function() {
+    var el = document.getElementById("ac-" + field);
+    if (el) el.style.display = "none";
+  }, 250);
+}
+
+function autoFillClient(name) {
+  var data = CLIENT_DB[name];
+  if (!data) return;
+  if (data.address) document.getElementById("client-address").value = data.address;
+  if (data.phone) document.getElementById("client-phone").value = data.phone;
+  if (data.email) document.getElementById("client-email").value = data.email;
+}
+
+function learnClient() {
+  var name = document.getElementById("client-name").value.trim();
+  if (!name) return;
+  var address = document.getElementById("client-address").value.trim();
+  var phone = document.getElementById("client-phone").value.trim();
+  var email = document.getElementById("client-email").value.trim();
+
+  // Get old client data to remove obsolete suggestions
+  var oldData = CLIENT_DB[name];
+  if (oldData) {
+    if (oldData.address && oldData.address !== address) {
+      // Remove old address from suggestions if no other client uses it
+      if (!isAddressUsedByOtherClients(name, oldData.address)) {
+        var idx = MEMORY.clientAddress.indexOf(oldData.address);
+        if (idx !== -1) MEMORY.clientAddress.splice(idx, 1);
+      }
+    }
+    if (oldData.phone && oldData.phone !== phone) {
+      if (!isPhoneUsedByOtherClients(name, oldData.phone)) {
+        var idx = MEMORY.clientPhone.indexOf(oldData.phone);
+        if (idx !== -1) MEMORY.clientPhone.splice(idx, 1);
+      }
+    }
+  }
+
+  CLIENT_DB[name] = { address: address, phone: phone, email: email };
+  if (MEMORY.clientName.indexOf(name) === -1) MEMORY.clientName.unshift(name);
+  if (address && MEMORY.clientAddress.indexOf(address) === -1) MEMORY.clientAddress.unshift(address);
+  if (phone && MEMORY.clientPhone.indexOf(phone) === -1) MEMORY.clientPhone.unshift(phone);
+  saveData();
+}
+
+function isAddressUsedByOtherClients(excludeName, address) {
+  for (var key in CLIENT_DB) {
+    if (key !== excludeName && CLIENT_DB[key].address === address) return true;
+  }
+  return false;
+}
+
+function isPhoneUsedByOtherClients(excludeName, phone) {
+  for (var key in CLIENT_DB) {
+    if (key !== excludeName && CLIENT_DB[key].phone === phone) return true;
+  }
+  return false;
+}
+
+// ============================================================
+// PRESTATIONS
+// ============================================================
+var prestCount = 0;
+
+function addPrest(prefill) {
+  prestCount++;
+  var id = prestCount;
+  var container = document.getElementById("prest-container");
+  var div = document.createElement("div");
+  div.className = "prest-item";
+  div.id = "prest-" + id;
+
+  var sugHtml = "";
+  for (var i = 0; i < PREST_DESC.length; i++) {
+    sugHtml += "<div class=\"ac-item\" data-val=\"" + esc(PREST_DESC[i]) + "\" data-id=\"" + id + "\" onmousedown=\"pickDesc(event)\" ontouchstart=\"pickDesc(event)\"><span class=\"badge\">Suggestion</span> " + esc(PREST_DESC[i]) + "</div>";
+  }
+
+  div.innerHTML =
+    "<button class=\"remove-btn\" onclick=\"removePrest(" + id + ")\">&#x2715;</button>" +
+    "<div class=\"field\" style=\"margin-bottom:6px\">" +
+    "<label>Description de la prestation</label>" +
+    "<div class=\"ac-wrap\">" +
+    "<textarea data-field=\"desc\" rows=\"2\" placeholder=\"Cliquez pour voir les suggestions...\"" +
+    " onfocus=\"showDescAC(" + id + ", this.value)\"" +
+    " oninput=\"showDescAC(" + id + ", this.value); learnPrest(" + id + "); updatePreview(); saveData()\"" +
+    " onblur=\"hideDescAC(" + id + ")\"></textarea>" +
+    "<div class=\"ac-list\" id=\"ac-desc-" + id + "\">" + sugHtml + "</div>" +
+    "</div></div>" +
+    "<div class=\"prest-grid\">" +
+    "<div class=\"field\"><label>Quantit\u00e9</label><input type=\"text\" data-field=\"qty\" placeholder=\"ex : 9 jours\" oninput=\"updatePreview();saveData()\"></div>" +
+    "<div class=\"field\"><label>Prix unit. (\u20ac)</label><input type=\"number\" data-field=\"price\" placeholder=\"0\" min=\"0\" step=\"0.01\" oninput=\"updateLineTotal(" + id + ");updatePreview();saveData()\"></div>" +
+    "<div class=\"field\"><label>Nb unit\u00e9s</label><input type=\"number\" data-field=\"units\" placeholder=\"1\" min=\"0\" step=\"0.01\" oninput=\"updateLineTotal(" + id + ");updatePreview();saveData()\"></div>" +
+    "<div class=\"field\"><label>TVA (%)</label><select data-field=\"tva\" onchange=\"updateLineTotal(" + id + ");updatePreview();saveData()\">" +
+    "<option value=\"0\" selected>0% (Art. 293B)</option>" +
+    "<option value=\"5.5\">5,5%</option>" +
+    "<option value=\"10\">10%</option>" +
+    "<option value=\"20\">20%</option>" +
+    "</select></div>" +
+    "</div>" +
+    "<div class=\"discount-row\">" +
+    "<div class=\"field\"><label>Remise (%)</label><input type=\"number\" data-field=\"discount\" placeholder=\"0\" min=\"0\" max=\"100\" step=\"0.5\" oninput=\"updateLineTotal(" + id + ");updatePreview();saveData()\"></div>" +
+    "<div class=\"field\"><label>Acompte (\u20ac)</label><input type=\"number\" data-field=\"acompte\" placeholder=\"0\" min=\"0\" step=\"0.01\" oninput=\"updateLineTotal(" + id + ");updatePreview();saveData()\"></div>" +
+    "</div>" +
+    "<div class=\"prest-line-total\" id=\"line-total-" + id + "\">Total ligne : <strong>0,00 \u20ac</strong></div>";
+
+  container.appendChild(div);
+
+  if (prefill) {
+    div.querySelector("[data-field=desc]").value = prefill.desc || "";
+    div.querySelector("[data-field=qty]").value = prefill.qty || "";
+    div.querySelector("[data-field=price]").value = prefill.price || "";
+    div.querySelector("[data-field=units]").value = prefill.units || "";
+    div.querySelector("[data-field=tva]").value = prefill.tva || "0";
+    var discountEl = div.querySelector("[data-field=discount]");
+    var acompteEl = div.querySelector("[data-field=acompte]");
+    if (discountEl) discountEl.value = prefill.discount || "";
+    if (acompteEl) acompteEl.value = prefill.acompte || "";
+    updateLineTotal(id);
+  }
+  updatePreview();
+}
+
+function learnPrest(id) {
+  var item = document.getElementById("prest-" + id);
+  if (!item) return;
+  var desc = item.querySelector("[data-field=desc]").value.trim();
+  if (desc && desc.length > 8 && PREST_DESC.indexOf(desc) === -1) {
+    PREST_DESC.unshift(desc);
+    if (PREST_DESC.length > 25) PREST_DESC.pop();
+  }
+}
+
+function showDescAC(id, val) {
+  var listEl = document.getElementById("ac-desc-" + id);
+  if (!listEl) return;
+  var q = (val||"").toLowerCase();
+  var filtered = q === "" ? PREST_DESC : PREST_DESC.filter(function(s){ return s.toLowerCase().indexOf(q) !== -1; });
+  if (!filtered.length) { listEl.style.display = "none"; return; }
+  var html = "";
+  for (var i = 0; i < filtered.length; i++) {
+    html += "<div class=\"ac-item\" data-val=\"" + esc(filtered[i]) + "\" data-id=\"" + id + "\" onmousedown=\"pickDesc(event)\" ontouchstart=\"pickDesc(event)\"><span class=\"badge\">Suggestion</span> " + esc(filtered[i]) + "</div>";
+  }
+  listEl.innerHTML = html;
+  listEl.style.display = "block";
+}
+
+function pickDesc(e) {
+  e.preventDefault();
+  var el = e.currentTarget;
+  var val = el.dataset.val;
+  var id = el.dataset.id;
+  var prest = document.getElementById("prest-" + id);
+  if (prest) prest.querySelector("[data-field=desc]").value = val;
+  document.getElementById("ac-desc-" + id).style.display = "none";
+  saveData();
+  updatePreview();
+}
+
+function hideDescAC(id) {
+  setTimeout(function() {
+    var el = document.getElementById("ac-desc-" + id);
+    if (el) el.style.display = "none";
+  }, 250);
+}
+
+function removePrest(id) {
+  var el = document.getElementById("prest-" + id);
+  if (el) el.remove();
+  saveData();
+  updatePreview();
+}
+
+function updateLineTotal(id) {
+  var item = document.getElementById("prest-" + id);
+  if (!item) return;
+  var price = parseFloat(item.querySelector("[data-field=price]").value) || 0;
+  var units = parseFloat(item.querySelector("[data-field=units]").value) || 0;
+  var tva = parseFloat(item.querySelector("[data-field=tva]").value) || 0;
+  var discountEl = item.querySelector("[data-field=discount]");
+  var acompteEl = item.querySelector("[data-field=acompte]");
+  var discount = discountEl ? (parseFloat(discountEl.value) || 0) : 0;
+  var acompte = acompteEl ? (parseFloat(acompteEl.value) || 0) : 0;
+
+  var htBrut = price * units;
+  var remise = htBrut * discount / 100;
+  var ht = htBrut - remise;
+  var tvaAmount = ht * tva / 100;
+  var ttc = ht + tvaAmount;
+  var reste = ttc - acompte;
+
+  var html = "Total ligne : <strong>" + fmt(ttc) + "</strong>";
+  if (discount > 0) html += " <span style='color:var(--gray);text-decoration:line-through'>" + fmt(htBrut) + "</span> <span style='color:var(--red);font-size:11px'>-" + discount + "%</span>";
+  if (tva > 0) html += " <span style='color:var(--gray)'>(HT : " + fmt(ht) + ")</span>";
+  if (acompte > 0) html += " <span style='color:var(--green)'>Reste : " + fmt(reste) + "</span>";
+  document.getElementById("line-total-" + id).innerHTML = html;
+}
+
+function getPrestations() {
+  var items = document.querySelectorAll(".prest-item");
+  var result = [];
+  for (var i = 0; i < items.length; i++) {
+    var item = items[i];
+    var discountEl = item.querySelector("[data-field=discount]");
+    var acompteEl = item.querySelector("[data-field=acompte]");
+    result.push({
+      desc: item.querySelector("[data-field=desc]").value,
+      qty: item.querySelector("[data-field=qty]").value,
+      price: parseFloat(item.querySelector("[data-field=price]").value) || 0,
+      units: parseFloat(item.querySelector("[data-field=units]").value) || 0,
+      tva: parseFloat(item.querySelector("[data-field=tva]").value) || 0,
+      discount: discountEl ? (parseFloat(discountEl.value) || 0) : 0,
+      acompte: acompteEl ? (parseFloat(acompteEl.value) || 0) : 0
+    });
+  }
+  return result;
+}
+
+// ============================================================
+// PREVIEW
+// ============================================================
+function updatePreview() {
+  var num = document.getElementById("inv-number").value || "-";
+  var dateVal = document.getElementById("inv-date").value;
+  var echeance = document.getElementById("inv-echeance").value;
+  var obj = document.getElementById("inv-object").value;
+
+  // Logo container
+  var logoContainer = document.getElementById("prev-logo-container");
+  if (EMITTER.logo) {
+    logoContainer.innerHTML = '<img src="' + EMITTER.logo + '" class="inv-logo" alt="Logo">';
+  } else {
+    var initial = (EMITTER.name || "?").trim().charAt(0).toUpperCase();
+    logoContainer.innerHTML = '<div class="inv-logo-placeholder">' + initial + '</div>';
+  }
+
+  document.getElementById("prev-title").textContent = currentMode === "devis" ? "DEVIS" : "FACTURE";
+  document.getElementById("prev-number").textContent = "N\u00b0 " + num;
+
+  if (dateVal) {
+    var p = dateVal.split("-");
+    document.getElementById("prev-date").textContent = "Date d'\u00e9mission : " + p[2] + "/" + p[1] + "/" + p[0];
+  } else {
+    document.getElementById("prev-date").textContent = "";
+  }
+
+  var echTop = document.getElementById("prev-echeance-top");
+  echTop.textContent = echeance ? ((currentMode === "devis" ? "Validit\u00e9 : " : "\u00c9ch\u00e9ance : ") + echeance) : "";
+
+  // Emitter
+  var em = EMITTER;
+  if (em.name) {
+    var emHtml = "<strong>" + esc(em.name) + "</strong><br>" +
+      esc(em.address) + "<br>" +
+      esc(em.email) + "<br>" +
+      esc(formatPhone(em.phone)) + "<br>" +
+      "SIRET : " + esc(em.siret);
+    if (em.ape) emHtml += "<br>APE : " + esc(em.ape);
+    if (em.tvaNum) emHtml += "<br>TVA : " + esc(em.tvaNum);
+    document.getElementById("prev-emitter").innerHTML = emHtml;
+  } else {
+    document.getElementById("prev-emitter").innerHTML = "<em style='color:var(--gray)'>Configurez vos infos dans les param\u00e8tres \u2699\ufe0f</em>";
+  }
+
+  var objLine = document.getElementById("prev-obj-line");
+  document.getElementById("prev-obj").textContent = obj;
+  objLine.style.display = obj ? "block" : "none";
+
+  // Client
+  var name = document.getElementById("client-name").value;
+  var contact = document.getElementById("client-contact").value;
+  var address = document.getElementById("client-address").value;
+  var phone = document.getElementById("client-phone").value;
+  var email = document.getElementById("client-email").value;
+  var cHtml = "";
+  if (name) cHtml += "<strong>" + esc(name) + "</strong><br>";
+  if (contact) cHtml += esc(contact) + "<br>";
+  if (address) cHtml += esc(address) + "<br>";
+  if (phone) cHtml += esc(formatPhone(phone)) + "<br>";
+  if (email) cHtml += esc(email);
+  document.getElementById("prev-client").innerHTML = cHtml || "\u2014";
+
+  // Table
+  var prests = getPrestations();
+  var hasTva = prests.some(function(p){ return p.tva > 0; });
+  var thead = document.getElementById("prev-thead");
+  if (hasTva) {
+    thead.innerHTML = "<th>Description</th><th class='center'>Qt\u00e9</th><th class='center'>Prix HT</th><th class='center'>TVA</th><th class='right'>Total HT</th>";
+  } else {
+    thead.innerHTML = "<th>Description</th><th class='center'>Quantit\u00e9</th><th class='center'>Prix unitaire</th><th class='right'>Total HT</th>";
+  }
+
+  var tbody = document.getElementById("prev-tbody");
+  var totalHT = 0, totalTVA = 0;
+  var hasContent = prests.length > 0 && prests.some(function(p){ return p.desc || p.price; });
+
+  if (!hasContent) {
+    var span = hasTva ? 5 : 4;
+    tbody.innerHTML = "<tr><td colspan='" + span + "' style='text-align:center;color:#6B7280;padding:20px;font-style:italic'>Aucune prestation saisie</td></tr>";
+  } else {
+    var rows = "";
+    var totalAcompte = 0;
+    for (var i = 0; i < prests.length; i++) {
+      var p = prests[i];
+      var htBrut = p.price * (p.units || 1);
+      var remise = htBrut * (p.discount || 0) / 100;
+      var lineHT = htBrut - remise;
+      var lineTVA = lineHT * p.tva / 100;
+      totalHT += lineHT;
+      totalTVA += lineTVA;
+      totalAcompte += (p.acompte || 0);
+      rows += "<tr><td>" + esc(p.desc || "\u2014");
+      if (p.discount > 0) rows += " <span style='font-size:10px;background:#FEE2E2;color:var(--red);padding:1px 5px;border-radius:4px;'>-" + p.discount + "%</span>";
+      rows += "</td>";
+      rows += "<td class='center'>" + esc(p.qty || "\u2014") + "</td>";
+      rows += "<td class='center'>";
+      if (p.price > 0) {
+        if (p.discount > 0) rows += "<span style='text-decoration:line-through;color:var(--gray)'>" + fmt(p.price) + "</span> " + fmt(p.price * (1 - p.discount/100));
+        else rows += fmt(p.price);
+      } else rows += "\u2014";
+      rows += "</td>";
+      if (hasTva) rows += "<td class='center'>" + (p.tva > 0 ? p.tva.toString().replace(".",",") + "%" : "\u2014") + "</td>";
+      rows += "<td class='right'>" + (lineHT > 0 ? fmt(lineHT) : "\u2014") + "</td></tr>";
+    }
+    tbody.innerHTML = rows;
+  }
+
+  var totalsEl = document.getElementById("prev-totals");
+  var totalTTC = totalHT + totalTVA;
+  var totalTTCFinal = hasTva ? totalTTC : totalHT;
+  var resteAPayer = totalTTCFinal - totalAcompte;
+
+  if (hasTva) {
+    totalsEl.innerHTML =
+      "<div class='inv-total-row'><span>Total HT</span><span>" + fmt(totalHT) + "</span></div>" +
+      "<div class='inv-total-row'><span>TVA</span><span>" + fmt(totalTVA) + "</span></div>" +
+      (totalAcompte > 0 ? "<div class='inv-total-row'><span>Acompte vers\u00e9</span><span>- " + fmt(totalAcompte) + "</span></div>" : "") +
+      "<div class='inv-total-final'><span>" + (totalAcompte > 0 ? "RESTE \u00c0 PAYER" : "TOTAL TTC") + "</span><span>" + fmt(totalAcompte > 0 ? resteAPayer : totalTTC) + "</span></div>";
+  } else {
+    totalsEl.innerHTML =
+      "<div class='inv-total-row'><span>Total HT</span><span>" + fmt(totalHT) + "</span></div>" +
+      (totalAcompte > 0 ? "<div class='inv-total-row'><span>Acompte vers\u00e9</span><span>- " + fmt(totalAcompte) + "</span></div>" : "") +
+      "<div class='inv-total-final'><span>" + (totalAcompte > 0 ? "RESTE \u00c0 PAYER" : "TOTAL TTC") + "</span><span>" + fmt(totalAcompte > 0 ? resteAPayer : totalHT) + "</span></div>";
+  }
+
+  document.getElementById("prev-tva-note").style.display = hasTva ? "none" : "block";
+
+  // Footer
+  var footerEl = document.getElementById("prev-footer-block");
+  if (currentMode === "devis") {
+    footerEl.innerHTML =
+      "<div class='inv-footer-block'><h4>Validation du devis</h4>" +
+      "<p>Pour accepter ce devis, veuillez le retourner sign\u00e9 avec la mention manuscrite \"Bon pour accord\".</p>" +
+      "<div class='signature-zone'>" +
+      "<div class='sig-box' style='max-width:320px'>" +
+      "<div class='sig-label'>Validation par le client</div>" +
+      "<div class='sig-mention' style='margin-bottom:8px'>Merci de nous retourner ce devis sign\u00e9 pour accord.</div>" +
+      "<div class='sig-line'>Date de signature :</div>" +
+      "<div class='sig-line' style='margin-top:32px'>Signature :</div>" +
+      "</div>" +
+      "</div></div>";
+  } else {
+    var bankInfo = "";
+    if (EMITTER.iban) bankInfo += "<strong>IBAN :</strong> " + esc(formatIBAN(EMITTER.iban)) + "<br>";
+    if (EMITTER.bic) bankInfo += "<strong>BIC :</strong> " + esc(EMITTER.bic);
+    footerEl.innerHTML =
+      "<div class='inv-footer-block'><h4>Informations de r\u00e8glement</h4>" +
+      "<p>\u00c9ch\u00e9ance : " + esc(echeance || "Sous 30 jours \u00e0 compter de la date d'\u00e9mission de la facture") + "<br>" +
+      "Mode de paiement : Virement bancaire" +
+      (bankInfo ? "<br><br>" + bankInfo : "") +
+      "</p></div>";
+  }
+
+  // Legal
+  var legalParts = [];
+  if (currentMode === "facture") {
+    legalParts.push("P\u00e9nalit\u00e9s de retard : indemnit\u00e9 forfaitaire de 40 \u20ac pour frais de recouvrement et int\u00e9r\u00eats au taux l\u00e9gal.");
+  } else {
+    legalParts.push("Devis gratuit et sans engagement.");
+  }
+  if (EMITTER.name) {
+    var legalCompany = EMITTER.name;
+    if (EMITTER.siret) legalCompany += " &mdash; SIRET : " + esc(EMITTER.siret);
+    legalParts.push(legalCompany);
+  }
+  if (EMITTER.legalCustom && EMITTER.legalCustom.trim()) {
+    legalParts.push(esc(EMITTER.legalCustom).replace(/\n/g, "<br>"));
+  }
+  document.getElementById("prev-legal").innerHTML = legalParts.join("<br>");
+}
+
+function formatPhone(phone) {
+  if (!phone) return phone;
+  // Remove all non-digit chars except +
+  var digits = phone.replace(/[^\d+]/g, "");
+  // French mobile: 06 12 34 56 78
+  if (digits.match(/^(0|\+33)[67]\d{8}$/)) {
+    var d = digits.startsWith("+33") ? "0" + digits.slice(3) : digits;
+    return d.replace(/(\d{2})(\d{2})(\d{2})(\d{2})(\d{2})/, "$1 $2 $3 $4 $5");
+  }
+  // Generic: group by 2
+  if (digits.length >= 8) {
+    return digits.replace(/(\d{2})(?=\d)/g, "$1 ").trim();
+  }
+  return phone;
+}
+
+function formatIBAN(iban) {
+  if (!iban) return iban;
+  // Remove spaces, uppercase
+  var clean = iban.replace(/\s/g, "").toUpperCase();
+  // Add space every 4 chars
+  return clean.replace(/(.{4})(?=.)/g, "$1 ");
+}
+
+function fmt(n) {
+  return n.toLocaleString("fr-FR", {minimumFractionDigits:2, maximumFractionDigits:2}) + " \u20ac";
+}
+
+// ============================================================
+// PDF
+// ============================================================
+function validateBeforeGenerate() {
+  var errors = [];
+
+  if (!EMITTER.name) {
+    errors.push("Configurez vos informations d'entreprise (\u2699\ufe0f en haut).");
+  }
+
+  var clientName = document.getElementById("client-name").value.trim();
+  if (!clientName) errors.push("Le nom du client est obligatoire.");
+
+  var prests = getPrestations();
+  var validPrests = prests.filter(function(p){ return p.desc && p.desc.trim() && p.price > 0; });
+  if (validPrests.length === 0) {
+    errors.push("Ajoutez au moins une prestation avec une description et un prix.");
+  }
+
+  var num = document.getElementById("inv-number").value.trim();
+  if (!num) errors.push("Le num\u00e9ro de document est obligatoire.");
+
+  return errors;
+}
+
+function generatePDF() {
+  // Atomic check: prevent double-clicks
+  if (window._generatingPDF) return;
+
+  var errors = validateBeforeGenerate();
+  if (errors.length > 0) {
+    alert("\u26a0\ufe0f Avant de g\u00e9n\u00e9rer le document :\n\n\u2022 " + errors.join("\n\u2022 "));
+    if (!EMITTER.name) openSettings();
+    return;
+  }
+
+  window._generatingPDF = true;
+  var btn = document.getElementById("gen-btn");
+  btn.style.opacity = "0.6";
+  btn.style.pointerEvents = "none";
+
+  // CRITICAL: increment counter BEFORE generating to prevent duplicates on rapid clicks
+  // The current number is already shown in the input — we use it, then bump for next time
+  setTimeout(function(){
+    window._generatingPDF = false;
+    btn.style.opacity = "";
+    btn.style.pointerEvents = "";
+  }, 2000);
+
+  updatePreview();
+  learnClient();
+
+  var num = document.getElementById("inv-number").value || (currentMode === "devis" ? "devis" : "facture");
+  var typeLabel = currentMode === "devis" ? "Devis" : "Facture";
+  var slug = (EMITTER.name || "doc").replace(/[^a-zA-Z0-9]/g, "_").substring(0, 20);
+  var invoiceEl = document.getElementById("invoice-preview");
+  var invoiceHTML = invoiceEl.outerHTML;
+
+  // Get current theme colors
+  var styles = getComputedStyle(document.documentElement);
+  var greenColor = styles.getPropertyValue("--green").trim() || "#1B4D3E";
+  var palePale = styles.getPropertyValue("--green-pale").trim() || "#EBF2EF";
+
+  var printWindow = window.open("", "_blank", "width=900,height=1200");
+  if (!printWindow) {
+    alert("Veuillez autoriser les pop-ups pour g\u00e9n\u00e9rer le PDF.");
+    return;
+  }
+
+  printWindow.document.write([
+    "<!DOCTYPE html>",
+    "<html><head>",
+    "<meta charset='UTF-8'>",
+    "<title>" + typeLabel + "_" + num + "_" + slug + "</title>",
+    "<link href='https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap' rel='stylesheet'>",
+    "<style>",
+    ":root{--green:" + greenColor + ";--green-pale:" + palePale + ";--gray:#6B7280;--border:#D1D9D6;}",
+    "*{box-sizing:border-box;margin:0;padding:0;}",
+    "body{font-family:'DM Sans',sans-serif;color:#1A1A1A;background:#fff;}",
+    "#invoice-preview{padding:48px 52px;font-size:13px;}",
+    ".inv-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:36px;padding-bottom:24px;border-bottom:2px solid var(--green);gap:20px;}",
+    ".inv-logo{height:130px;object-fit:contain;}",
+    ".inv-logo-placeholder{height:90px;width:90px;background:var(--green-pale);border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--green);font-family:'Cormorant Garamond',serif;font-weight:700;font-size:32px;}",
+    ".inv-title-block{text-align:right;}",
+    ".inv-title{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;color:var(--green);letter-spacing:1px;}",
+    ".inv-number{font-size:15px;font-weight:600;margin-top:2px;}",
+    ".inv-date{font-size:12px;color:var(--gray);margin-top:4px;}",
+    ".inv-parties{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:32px;}",
+    ".inv-party-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--green);margin-bottom:8px;}",
+    ".inv-party p{font-size:12.5px;line-height:1.7;}",
+    ".inv-table{width:100%;border-collapse:collapse;margin-bottom:20px;}",
+    ".inv-table thead tr{background:var(--green);color:#fff;}",
+    ".inv-table thead th{padding:10px 12px;text-align:left;font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;}",
+    ".inv-table thead th.right{text-align:right;}",
+    ".inv-table thead th.center{text-align:center;}",
+    ".inv-table tbody tr{border-bottom:1px solid var(--border);}",
+    ".inv-table tbody tr:nth-child(even){background:var(--green-pale);}",
+    ".inv-table tbody td{padding:10px 12px;font-size:12px;line-height:1.5;}",
+    ".inv-table tbody td.right{text-align:right;font-weight:500;}",
+    ".inv-table tbody td.center{text-align:center;}",
+    ".inv-totals{display:flex;flex-direction:column;align-items:flex-end;margin-bottom:12px;}",
+    ".inv-total-row{display:flex;justify-content:space-between;width:240px;padding:5px 0;font-size:13px;border-bottom:1px solid var(--border);color:var(--gray);}",
+    ".inv-total-final{background:var(--green);color:#fff;font-weight:700;font-size:15px;padding:10px 14px;border-radius:4px;margin-top:6px;width:260px;display:flex;justify-content:space-between;}",
+    ".inv-tva-note{font-size:11px;color:var(--gray);font-style:italic;margin-bottom:24px;}",
+    ".inv-footer-block{background:var(--green-pale);border-left:3px solid var(--green);padding:14px 16px;border-radius:0 6px 6px 0;margin-bottom:12px;}",
+    ".inv-footer-block h4{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--green);margin-bottom:8px;}",
+    ".inv-footer-block p{font-size:11.5px;line-height:1.7;}",
+    ".signature-zone{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:8px;}",
+    ".sig-box{border:1.5px dashed var(--green);border-radius:6px;padding:14px;min-height:90px;}",
+    ".sig-box .sig-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--green);margin-bottom:8px;}",
+    ".sig-box .sig-line{border-bottom:1px solid var(--gray);margin-top:30px;font-size:10.5px;color:var(--gray);padding-bottom:2px;}",
+    ".sig-box .sig-mention{font-size:11px;font-style:italic;}",
+    ".inv-legal{margin-top:16px;padding-top:12px;border-top:1px solid var(--border);font-size:10.5px;color:var(--gray);line-height:1.6;}",
+    "@media print{body{margin:0;padding:0;}#invoice-preview{padding:18mm 16mm;box-shadow:none;}@page{margin:0;size:A4;}}",
+    "</style></head><body>",
+    invoiceHTML,
+    "<script>window.onload=function(){setTimeout(function(){window.print();},800);};<\/script>",
+    "</body></html>"
+  ].join("\n"));
+  printWindow.document.close();
+
+  // Save to history BEFORE incrementing counter
+  var docData = captureDocumentForHistory();
+  addToHistory(docData);
+
+  // First document? Celebrate!
+  var history = loadHistory();
+  if (history.length === 1) {
+    setTimeout(launchConfetti, 800);
+  } else {
+    setTimeout(function(){ showToast("\u2705 PDF g\u00e9n\u00e9r\u00e9 et sauvegard\u00e9 dans l'historique !"); }, 1000);
+  }
+
+  setTimeout(incrementCounter, 1500);
+}
+
+function exportCSV() {
+  var clientNames = Object.keys(CLIENT_DB);
+  if (clientNames.length === 0) {
+    alert("Aucun client enregistr\u00e9 \u00e0 exporter.");
+    return;
+  }
+  var csv = "Nom;Adresse;T\u00e9l\u00e9phone;Email\n";
+  clientNames.forEach(function(name){
+    var c = CLIENT_DB[name];
+    csv += "\"" + name.replace(/"/g, "\"\"") + "\";";
+    csv += "\"" + (c.address || "").replace(/"/g, "\"\"") + "\";";
+    csv += "\"" + (c.phone || "").replace(/"/g, "\"\"") + "\";";
+    csv += "\"" + (c.email || "").replace(/"/g, "\"\"") + "\"\n";
+  });
+  var blob = new Blob(["\ufeff" + csv], { type: "text/csv;charset=utf-8" });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement("a");
+  a.href = url;
+  a.download = "clients_" + new Date().toISOString().split("T")[0] + ".csv";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function sendByEmail() {
+  var clientEmail = document.getElementById("client-email").value.trim();
+  var clientName = document.getElementById("client-name").value.trim() || "Client";
+  var num = document.getElementById("inv-number").value;
+  var typeLabel = currentMode === "devis" ? "devis" : "facture";
+  var typeArticle = currentMode === "devis" ? "le devis" : "la facture";
+
+  var subject = (currentMode === "devis" ? "Devis" : "Facture") + " n\u00b0" + num + " - " + (EMITTER.name || "");
+  var body = "Bonjour " + clientName + ",\n\n";
+  body += "Veuillez trouver ci-joint " + typeArticle + " n\u00b0" + num + ".\n\n";
+  if (currentMode === "devis") {
+    body += "Pour valider ce devis, merci de le retourner sign\u00e9 avec la mention \"Bon pour accord\".\n\n";
+  } else {
+    body += "Conditions de r\u00e8glement : virement bancaire (IBAN sur la facture).\n\n";
+  }
+  body += "Cordialement,\n" + (EMITTER.name || "");
+
+  var mailto = "mailto:" + encodeURIComponent(clientEmail) +
+    "?subject=" + encodeURIComponent(subject) +
+    "&body=" + encodeURIComponent(body);
+
+  window.location.href = mailto;
+}
+
+
+// ============================================================
+// TOAST NOTIFICATION
+// ============================================================
+function showToast(msg, duration) {
+  var toast = document.getElementById("toast");
+  toast.textContent = msg;
+  toast.classList.add("show");
+  setTimeout(function(){ toast.classList.remove("show"); }, duration || 2500);
+}
+
+// ============================================================
+// CONFETTI (first document generation)
+// ============================================================
+function launchConfetti() {
+  var container = document.getElementById("confetti-container");
+  container.innerHTML = "";
+  var colors = ["#1B4D3E","#C9A84C","#2D6A55","#EBF2EF","#F59E0B","#fff"];
+  for (var i = 0; i < 60; i++) {
+    var el = document.createElement("div");
+    var size = Math.random() * 10 + 6;
+    el.style.cssText = "position:absolute;width:" + size + "px;height:" + size + "px;" +
+      "background:" + colors[Math.floor(Math.random() * colors.length)] + ";" +
+      "left:" + Math.random() * 100 + "vw;" +
+      "border-radius:" + (Math.random() > .5 ? "50%" : "2px") + ";" +
+      "animation:confetti-fall " + (Math.random() * 2 + 1.5) + "s ease forwards;" +
+      "animation-delay:" + Math.random() * .8 + "s;";
+    container.appendChild(el);
+  }
+  setTimeout(function(){ container.innerHTML = ""; }, 4000);
+}
+
+// ============================================================
+// HISTORY
+// ============================================================
+var HISTORY_KEY = "facturepro_history_v1";
+
+function loadHistory() {
+  try {
+    var raw = localStorage.getItem(HISTORY_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch(e) { return []; }
+}
+
+function saveHistory(history) {
+  localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+}
+
+function addToHistory(docData) {
+  var history = loadHistory();
+  history.unshift(docData);
+  if (history.length > 100) history.pop();
+  saveHistory(history);
+  updateHistoryBadge();
+}
+
+function updateHistoryBadge() {
+  var history = loadHistory();
+  var badge = document.getElementById("history-badge");
+  if (history.length > 0) {
+    badge.textContent = history.length > 99 ? "99+" : history.length;
+    badge.style.display = "flex";
+  } else {
+    badge.style.display = "none";
+  }
+}
+
+function toggleHistory() {
+  var panel = document.getElementById("history-panel");
+  var overlay = document.getElementById("history-overlay");
+  var isOpen = panel.classList.contains("open");
+  if (!isOpen) {
+    renderHistory();
+    panel.classList.add("open");
+    overlay.classList.add("show");
+  } else {
+    panel.classList.remove("open");
+    overlay.classList.remove("show");
+  }
+}
+
+function renderHistory() {
+  var history = loadHistory();
+  var body = document.getElementById("history-body");
+  if (history.length === 0) {
+    body.innerHTML = '<div class="history-empty"><svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" width="40" height="40"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg><p>Aucun document pour le moment</p></div>';
+    return;
+  }
+  var html = "";
+  for (var i = 0; i < history.length; i++) {
+    var doc = history[i];
+    var canConvert = doc.type === "devis";
+    html += "<div class=\"history-item\" id=\"hi-" + i + "\">";
+    html += "<span class=\"hi-type " + doc.type + "\">" + (doc.type === "devis" ? "DEVIS" : "FACTURE") + "</span> ";
+    html += "<span class=\"hi-num\">N\u00b0 " + esc(doc.number) + "</span>";
+    html += "<div class=\"hi-client\">" + esc(doc.clientName || "Client non renseign\u00e9") + "</div>";
+    html += "<div class=\"hi-amount\">" + fmt(doc.total || 0) + "</div>";
+    html += "<div class=\"hi-date\">" + esc(doc.date || "") + "</div>";
+    html += "<div class=\"hi-actions\">";
+    html += "<button class=\"hi-btn hi-btn-load\" onclick=\"loadFromHistory(" + i + ")\" title=\"Recharger\">\u21ba Ouvrir</button>";
+    if (canConvert) {
+      html += "<button class=\"hi-btn hi-btn-convert\" onclick=\"convertToInvoice(" + i + ")\" title=\"Convertir en facture\">\u2192 Facture</button>";
+    }
+    html += "<button class=\"hi-btn hi-btn-del\" onclick=\"deleteFromHistory(" + i + ")\" title=\"Supprimer\">\u2715</button>";
+    html += "</div></div>";
+  }
+  body.innerHTML = html;
+}
+
+function deleteFromHistory(idx) {
+  var history = loadHistory();
+  history.splice(idx, 1);
+  saveHistory(history);
+  updateHistoryBadge();
+  renderHistory();
+  showToast("Document supprim\u00e9 de l'historique");
+}
+
+function loadFromHistory(idx) {
+  var history = loadHistory();
+  var doc = history[idx];
+  if (!doc) return;
+
+  if (!confirm("Recharger ce document ?\nLe formulaire actuel sera remplac\u00e9.")) return;
+
+  // Set mode
+  setMode(doc.type, true);
+
+  // Set fields
+  var fields = {
+    "inv-number": doc.number,
+    "inv-date": doc.dateRaw,
+    "inv-echeance": doc.echeance,
+    "inv-object": doc.object,
+    "client-name": doc.clientName,
+    "client-contact": doc.clientContact,
+    "client-address": doc.clientAddress,
+    "client-phone": doc.clientPhone,
+    "client-email": doc.clientEmail
+  };
+  Object.keys(fields).forEach(function(id){
+    var el = document.getElementById(id);
+    if (el) el.value = fields[id] || "";
+  });
+
+  // Reload prestations
+  document.getElementById("prest-container").innerHTML = "";
+  prestCount = 0;
+  if (doc.prestations && doc.prestations.length) {
+    doc.prestations.forEach(function(p){ addPrest(p); });
+  } else {
+    addPrest();
+  }
+
+  toggleHistory();
+  saveData();
+  updatePreview();
+  showToast("\u2705 Document recharg\u00e9 !");
+}
+
+function convertToInvoice(idx) {
+  var history = loadHistory();
+  var doc = history[idx];
+  if (!doc) return;
+
+  if (!confirm("Convertir ce devis en facture ?\nLes informations seront copi\u00e9es dans un nouveau formulaire.")) return;
+
+  // Switch to invoice mode
+  setMode("facture", true);
+  var c = loadCounters();
+  document.getElementById("inv-number").value = formatNumber(c["facture"]);
+
+  // Copy client info
+  document.getElementById("inv-date").value = new Date().toISOString().split("T")[0];
+  document.getElementById("inv-echeance").value = "Sous 30 jours \u00e0 compter de la date d'\u00e9mission de la facture";
+  document.getElementById("inv-object").value = doc.object || "";
+  document.getElementById("client-name").value = doc.clientName || "";
+  document.getElementById("client-contact").value = doc.clientContact || "";
+  document.getElementById("client-address").value = doc.clientAddress || "";
+  document.getElementById("client-phone").value = doc.clientPhone || "";
+  document.getElementById("client-email").value = doc.clientEmail || "";
+
+  // Reload prestations
+  document.getElementById("prest-container").innerHTML = "";
+  prestCount = 0;
+  if (doc.prestations && doc.prestations.length) {
+    doc.prestations.forEach(function(p){ addPrest(p); });
+  } else {
+    addPrest();
+  }
+
+  toggleHistory();
+  saveData();
+  updatePreview();
+  showToast("\u2705 Devis converti en facture ! V\u00e9rifiez les informations avant de g\u00e9n\u00e9rer.");
+}
+
+// Capture document data for history
+function captureDocumentForHistory() {
+  var prests = getPrestations();
+  var totalHT = 0, totalTVA = 0, totalAcompte = 0;
+  prests.forEach(function(p){
+    var htBrut = p.price * (p.units || 1);
+    var remise = htBrut * (p.discount || 0) / 100;
+    var lineHT = htBrut - remise;
+    totalHT += lineHT;
+    totalTVA += lineHT * p.tva / 100;
+    totalAcompte += (p.acompte || 0);
+  });
+  var totalTTC = totalHT + totalTVA - totalAcompte;
+
+  var dateRaw = document.getElementById("inv-date").value;
+  var dateParts = dateRaw ? dateRaw.split("-") : ["","",""];
+  var dateFormatted = dateParts.length === 3 ? dateParts[2] + "/" + dateParts[1] + "/" + dateParts[0] : dateRaw;
+
+  return {
+    type: currentMode,
+    number: document.getElementById("inv-number").value,
+    date: dateFormatted,
+    dateRaw: dateRaw,
+    echeance: document.getElementById("inv-echeance").value,
+    object: document.getElementById("inv-object").value,
+    clientName: document.getElementById("client-name").value,
+    clientContact: document.getElementById("client-contact").value,
+    clientAddress: document.getElementById("client-address").value,
+    clientPhone: document.getElementById("client-phone").value,
+    clientEmail: document.getElementById("client-email").value,
+    prestations: prests,
+    total: totalTTC,
+    generatedAt: new Date().toISOString()
+  };
+}
+
+// ============================================================
+// LEGAL TEMPLATES
+// ============================================================
+var LEGAL_TEMPLATES = {
+  auto: "TVA non applicable, art. 293 B du CGI.\nM\u00e9diateur de la consommation : [Nom et coordonn\u00e9es du m\u00e9diateur].",
+  btp: "Assurance d\u00e9cennale n\u00b0[NUM\u00c9RO] - Assureur : [NOM ASSUREUR] - Garantie valable pour les travaux r\u00e9alis\u00e9s en France.\nCertification RGE n\u00b0[NUM\u00c9RO] (si applicable).\nM\u00e9diateur de la consommation : [Nom et coordonn\u00e9es].",
+  liberal: "Membre de [Ordre/Syndicat professionnel].\nResponsabilit\u00e9 civile professionnelle assur\u00e9e par [NOM ASSUREUR] - Police n\u00b0[NUM\u00c9RO].\nM\u00e9diateur : [Nom et coordonn\u00e9es].",
+  consultant: "Prestation de conseil r\u00e9alis\u00e9e conform\u00e9ment aux conditions g\u00e9n\u00e9rales de vente disponibles sur demande.\nResponsabilit\u00e9 civile professionnelle : [NOM ASSUREUR].\nM\u00e9diateur de la consommation : [Nom et coordonn\u00e9es].",
+  vide: ""
+};
+
+function applyLegalTemplate(key) {
+  var textarea = document.getElementById("set-legal-custom");
+  if (!textarea) return;
+  textarea.value = LEGAL_TEMPLATES[key] || "";
+}
+
+function togglePreview() {
+  document.getElementById("preview-panel").classList.toggle("show-mobile");
+}
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function() {
+    navigator.serviceWorker.register("service-worker.js").catch(function(){});
+  });
+}
+
+window.addEventListener("DOMContentLoaded", function() {
+  document.getElementById("inv-date").value = new Date().toISOString().split("T")[0];
+
+  var hasSettings = loadSettings();
+  loadData();
+
+  // Restore prestations
+  try {
+    var raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      var data = JSON.parse(raw);
+      if (data.form && data.form._prestations && data.form._prestations.length) {
+        document.getElementById("prest-container").innerHTML = "";
+        prestCount = 0;
+        for (var i = 0; i < data.form._prestations.length; i++) addPrest(data.form._prestations[i]);
+      } else { addPrest(); }
+    } else { addPrest(); }
+  } catch(e) { addPrest(); }
+
+  // Init counter if no number
+  var numEl = document.getElementById("inv-number");
+  if (!numEl.value) {
+    var c = loadCounters();
+    numEl.value = formatNumber(c[currentMode]);
+  }
+
+  // Default mode: devis
+  if (!localStorage.getItem("facturepro_data_v1")) {
+    setMode("devis", true);
+    var c = loadCounters();
+    document.getElementById("inv-number").value = formatNumber(c["devis"]);
+  }
+
+  updateAppHeader();
+  updatePreview();
+  updateHistoryBadge();
+
+  // First launch?
+  if (!hasSettings) {
+    setTimeout(function(){ document.getElementById("welcome-overlay").classList.add("show"); }, 300);
+  }
+});
+
+</script>
+</body>
+</html>
